@@ -780,6 +780,11 @@ class World(object):
 
         self.traffic_manager = self.client.get_trafficmanager(port=self.args.tm_port)
 
+
+    def get_vehicles(self):
+        return [actor for actor in self.world.get_actors() if "vehicle" in actor.type_id]
+
+
     def select_hero_actor(self):
         """Selects only one hero actor if there are more than one. If there are not any, it will spawn one."""
         hero_vehicles = [
@@ -791,17 +796,21 @@ class World(object):
             self.hero_actor = random.choice(hero_vehicles)
             self.hero_transform = self.hero_actor.get_transform()
 
-    def spawn_hero(self, blueprint_filter="vehicle.*", spawn_point=None):
+    def spawn_hero(self, blueprint_filter="vehicle.*", spawn_point=None, role_name="hero"):
         """Spawns the hero actor when the script runs"""
         # Get a random blueprint.
         blueprint = random.choice(
             self.world.get_blueprint_library().filter(blueprint_filter)
         )
-        blueprint.set_attribute("role_name", "hero")
+        blueprint.set_attribute("role_name", role_name)
         if blueprint.has_attribute("color"):
             color = random.choice(blueprint.get_attribute("color").recommended_values)
             blueprint.set_attribute("color", color)
 
+        spawn_points = self.world.get_map().get_spawn_points()
+        # with open("spawn_points.txt", 'w') as f:
+        #     for transform in spawn_points:
+        #         f.write("{}: {}\n".format(transform.location, transform.rotation))
         # Spawn the player.
         actor = None
         if not spawn_point is None:
@@ -812,9 +821,10 @@ class World(object):
                 random.choice(spawn_points) if spawn_points else carla.Transform()
             )
             actor = self.world.try_spawn_actor(blueprint, spawn_point)
-
-        self.hero_actor = actor
-        self.hero_transform = self.hero_actor.get_transform()
+        
+        if role_name == "hero":
+            self.hero_actor = actor
+            self.hero_transform = self.hero_actor.get_transform()
 
         return actor
 

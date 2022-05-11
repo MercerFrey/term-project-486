@@ -121,37 +121,29 @@ class InfoBar(object):
 
     def tick(self, clock):
         hero_mode_text = []
-        if self.world.hero_actor is not None:
-            hero_speed = self.world.hero_actor.get_velocity()
-            hero_speed_text = 3.6 * math.sqrt(
-                hero_speed.x**2 + hero_speed.y**2 + hero_speed.z**2
+        text = []
+
+        calculate_speed = lambda vehicle_speed: 3.6 * math.sqrt(
+            vehicle_speed.x**2 + vehicle_speed.y**2 + vehicle_speed.z**2
             )
-
-            affected_traffic_light_text = "None"
-            if self.world.affected_traffic_light is not None:
-                state = self.world.affected_traffic_light.state
-                if state == carla.TrafficLightState.Green:
-                    affected_traffic_light_text = "GREEN"
-                elif state == carla.TrafficLightState.Yellow:
-                    affected_traffic_light_text = "YELLOW"
-                else:
-                    affected_traffic_light_text = "RED"
-
-            affected_speed_limit_text = self.world.hero_actor.get_speed_limit()
-            if math.isnan(affected_speed_limit_text):
-                affected_speed_limit_text = 0.0
-            hero_mode_text = [
-                # 'Hero Mode:                 ON',
-                "Ego ID:               %7d" % self.world.hero_actor.id,
-                "Ego Vehicle:   %14s"
-                % get_actor_display_name(self.world.hero_actor, truncate=14),
-                "Ego Speed:           %3d km/h" % hero_speed_text,
-                # 'Hero Affected by:',
-                # '  Traffic Light: %12s' % affected_traffic_light_text,
-                # '  Speed Limit:       %3d km/h' % affected_speed_limit_text
+        text = [
+                [
+                "{} ID:               {}".format(
+                    "EGO" if vehicle.attributes["role_name"] == "hero" else "OTHER",
+                        vehicle.id),
+                "{} Vehicle:   {:>14}".format(
+                    "EGO" if vehicle.attributes["role_name"] == "hero" else "OTHER",
+                        get_actor_display_name(vehicle, truncate=14)),
+                "{} Speed:           {:.0f} km/h".format(
+                    "EGO" if vehicle.attributes["role_name"] == "hero" else "OTHER",
+                    calculate_speed(vehicle.get_velocity())),
+                "{} Location: {}".format(
+                    "EGO" if vehicle.attributes["role_name"] == "hero" else "OTHER",
+                        vehicle.get_location()),
+                ]
+            for vehicle in sorted(self.world.get_vehicles(), key= lambda x: x.id)
             ]
-        else:
-            hero_mode_text = ["Hero Mode:                OFF"]
+
 
         info_text = [
             "Real:    % 16s FPS" % round(1 / self.world.fixed_delta_seconds),
@@ -163,6 +155,7 @@ class InfoBar(object):
 
         self.add_info("SIMULATION", info_text)
         self.add_info("EGO VEHICLE", hero_mode_text)
+        [self.add_info(info[0], info) for info in text] 
 
         self._notifications.tick(clock)
 
