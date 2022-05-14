@@ -5,7 +5,7 @@ from .controller import PurePursuitController
 
 
 class Hero(object):
-    def __init__(self, location, rotation, waypoints, target_speed_km):
+    def __init__(self, location, rotation, waypoints, target_speed_km, actor_role):
         self.world = None
         self.actor = None
         self.control = None
@@ -14,6 +14,7 @@ class Hero(object):
         self.rotation = rotation
         self.waypoints = waypoints
         self.target_speed = target_speed_km / 3.6  # km/h to m/s
+        self.actor_role = actor_role
         self.tick_count = 0
 
     def start(self, world):
@@ -21,7 +22,7 @@ class Hero(object):
         spawn_point = carla.Transform(
             self.location, self.rotation
         )
-        self.actor = self.world.spawn_hero("vehicle.audi.tt", spawn_point)
+        self.actor = self.world.spawn_hero("vehicle.audi.tt", spawn_point, role_name = self.actor_role)
 
         self.controller = PurePursuitController()
 

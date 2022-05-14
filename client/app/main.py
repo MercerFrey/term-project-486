@@ -50,6 +50,10 @@ def game_loop(args):
 
         # Game loop
         clock = pygame.time.Clock()
+
+        # Max acc
+        #max_acc=0
+        
         while True:
             clock.tick_busy_loop(500)
 
@@ -60,6 +64,7 @@ def game_loop(args):
             hud.tick(clock)
             input_control.tick(clock)
 
+            
             # Render all modules
             display.fill(COLOR_ALUMINIUM_4)
             world.render(display)
@@ -94,18 +99,25 @@ def scenario_reader(scenario_file):
                 location = actor_spawn_point_location,
                 rotation = actor_spawn_point_rotation,
                 waypoints = actor_way_points,
-                target_speed_km = actor_target_speed
+                target_speed_km = actor_target_speed,
+                actor_role = actor_name,
             )
         else:
             actor = Other(
                 location = actor_spawn_point_location,
                 rotation = actor_spawn_point_rotation,
                 waypoints = actor_way_points,
-                target_speed_km = actor_target_speed
+                target_speed_km = actor_target_speed,
+                actor_role = actor_name,
             )
         actors.append(actor)
 
     return actors
+
+def max_acceleration_printer(actor, max_acc):
+    if actor.get_acceleration() > max_acc:
+        pass
+
 
 def main():
     """Parses the arguments received from commandline and runs the game loop"""
