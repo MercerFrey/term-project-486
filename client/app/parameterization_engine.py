@@ -54,13 +54,13 @@ def write_to_json(new_scenario, filename):
         json.dump(new_scenario, f, indent=4)
 
 
-def write_scenario_speeds(scenario, speed_list):
+def write_scenario_speeds(scenario_filename, scenario, speed_list):
     for i in range(len(speed_list)):
         scenario["hero"]["target_speed"]["value"] = speed_list[i][0]
         scenario["other1"]["target_speed"]["value"] = speed_list[i][1]
         scenario["other2"]["target_speed"]["value"] = speed_list[i][2]
 
-        write_to_json(scenario, "par/par_scenario_{}.json".format(i))
+        write_to_json(scenario, "par/par_{}_{}.json".format(scenario_filename, i))
 
 def main():
     argparser = argparse.ArgumentParser()
@@ -82,7 +82,7 @@ def main():
     v2_speed = samples[:, 2]
     
     plot(ego_speed, v1_speed, v2_speed)
-    write_scenario_speeds(scenario, samples)
+    write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
     
     for i in range(25):
         try:

@@ -34,6 +34,9 @@ class Other(object):
         # self.actor.set_autopilot(True, world.args.tm_port)
 
     def tick(self, clock):
+        if self.target_speed == 0:
+            return
+            
         ctrl = carla.VehicleControl()
 
         if self.actor_role == "other1":
