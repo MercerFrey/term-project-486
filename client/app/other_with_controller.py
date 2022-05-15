@@ -17,8 +17,8 @@ class Other(object):
         self.location = location
         self.rotation = rotation
         self.actor_role = actor_role
-        self.tick_count = 0 
-        self.autopilot = False
+        self.lane_changed = False
+        self.tick_count = 0
 
 
     def start(self, world):
@@ -36,23 +36,31 @@ class Other(object):
     def tick(self, clock):
         ctrl = carla.VehicleControl()
 
+        if self.actor_role == "other1":
+            if not self.lane_changed:
+                if self.ttc(self.actor.id + 1) < 3:
+                    if self.tick_count < 6:
+                        self.tick_count += 1
+                    else:
+                        self.lane_changed = True
+                        self.waypoints = [carla.Location(waypoint.x, waypoint.y - 4, waypoint.z) for waypoint in self.waypoints] 
+                        self.world.register_actor_waypoints_to_draw(self.actor, self.waypoints)
 
-        if self.ttc(self.actor.id + 1) < 3 or self.autopilot:
-            self.autopilot = True
-            self.tick_count += 1
-            ctrl.throttle = 0.3
-            ctrl.steer = -0.1 if self.tick_count < 5 else 0
+                    ctrl.throttle = 1
+                    ctrl.steer = -1
+                    self.actor.apply_control(ctrl)
+                    return
+                    
         
-        else:
-            throttle, steer = self.controller.get_control(
-                self.actor,
-                self.waypoints,
-                self.target_speed,
-                self.world.fixed_delta_seconds,
-            )
+        throttle, steer = self.controller.get_control(
+            self.actor,
+            self.waypoints,
+            self.target_speed,
+            self.world.fixed_delta_seconds,
+        )
 
-            ctrl.throttle = throttle
-            ctrl.steer = steer
+        ctrl.throttle = throttle
+        ctrl.steer = steer
 
 
         self.actor.apply_control(ctrl)
