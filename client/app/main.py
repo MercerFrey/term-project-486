@@ -128,12 +128,13 @@ def max_acceleration_calculator(actor, map):
     global max_acc
 
     waypoint = map.get_waypoint(actor.get_location(), project_to_road=True, lane_type=carla.LaneType.Driving)
-    road_pitch = waypoint.transform.rotation.pitch
-    actor_pitch = actor.get_transform().rotation.pitch
+    road_yaw = waypoint.transform.rotation.yaw
+    actor_yaw = actor.get_transform().rotation.yaw
 
+    
     curr_acc_vector = actor.get_acceleration()
-    curr_lat_acc= (abs(curr_acc_vector.x * math.sin(road_pitch - actor_pitch))
-                + abs(curr_acc_vector.y * math.cos(road_pitch - actor_pitch))
+    curr_lat_acc= (abs(curr_acc_vector.x * math.sin(road_yaw - actor_yaw))
+                + abs(curr_acc_vector.y * math.cos(road_yaw - actor_yaw))
                 )
 
     if curr_lat_acc > max_acc:

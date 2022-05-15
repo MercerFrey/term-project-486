@@ -42,7 +42,7 @@ class Other(object):
         if self.actor_role == "other1":
             if not self.lane_changed:
                 if self.ttc(self.actor.id + 1) < 3:
-                    if self.tick_count < 6:
+                    if self.tick_count < 5:
                         self.tick_count += 1
                     else:
                         self.lane_changed = True
