@@ -46,7 +46,7 @@ class Other(object):
                         self.tick_count += 1
                     else:
                         self.lane_changed = True
-                        self.waypoints = [carla.Location(waypoint.x, waypoint.y - 4, waypoint.z) for waypoint in self.waypoints] 
+                        self.waypoints = [carla.Location(waypoint.x - 4, waypoint.y - 4, waypoint.z) for waypoint in self.waypoints] 
                         self.world.register_actor_waypoints_to_draw(self.actor, self.waypoints)
 
                     ctrl.throttle = 1

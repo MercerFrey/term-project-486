@@ -84,10 +84,10 @@ def main():
     plot(ego_speed, v1_speed, v2_speed)
     write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
     
-    for i in range(25):
-        try:
-            p = subprocess.Popen("python client/run.py --scenario par/par_scenario_{}.json".format(i), shell=True)
-            p.wait()
-        except Exception as e:
-            pass
+    # for i in range(25):
+    #     try:
+    #         p = subprocess.Popen("python client/run.py --scenario par/par_scenario_{}.json".format(i), shell=True)
+    #         p.wait()
+    #     except Exception as e:
+    #         pass
 main()
