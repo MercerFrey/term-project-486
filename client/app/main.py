@@ -2,6 +2,7 @@ import argparse
 import pygame
 import carla
 import json
+import math
 
 from .hud import InfoBar
 #from .hero import Hero
@@ -12,6 +13,8 @@ from .other_with_controller import Other
 
 from .color import *
 
+
+max_acc = 0
 
 def game_loop(args):
     """Initialized, Starts and runs all the needed modules for No Rendering Mode"""
@@ -60,7 +63,10 @@ def game_loop(args):
             # Tick all modules
             world.tick(clock)
             [actor.tick(clock) for actor in actors]
-        
+
+            # Calculates max acc in general
+            max_acceleration_calculator(actors[1].actor, world.world.get_map())
+            
             hud.tick(clock)
             input_control.tick(clock)
 
@@ -78,6 +84,10 @@ def game_loop(args):
 
     finally:
         [actor.destroy() for actor in actors if actor is not None]
+
+        # Prints max acceleration
+        with open("max_acc.txt", 'w') as f:
+            f.write(str(max_acc))
 
 
 
@@ -114,9 +124,21 @@ def scenario_reader(scenario_file):
 
     return actors
 
-def max_acceleration_printer(actor, max_acc):
-    if actor.get_acceleration() > max_acc:
-        pass
+def max_acceleration_calculator(actor, map):
+    global max_acc
+
+    waypoint = map.get_waypoint(actor.get_location(), project_to_road=True, lane_type=carla.LaneType.Driving)
+    road_pitch = waypoint.transform.rotation.pitch
+    actor_pitch = actor.get_transform().rotation.pitch
+
+    curr_acc_vector = actor.get_acceleration()
+    curr_lat_acc= (abs(curr_acc_vector.x * math.sin(road_pitch - actor_pitch))
+                + abs(curr_acc_vector.y * math.cos(road_pitch - actor_pitch))
+                )
+
+    if curr_lat_acc > max_acc:
+       max_acc = curr_lat_acc
+    
 
 
 def main():
