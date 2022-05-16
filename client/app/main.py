@@ -20,27 +20,27 @@ def game_loop(args):
         # Init Pygame
         pygame.init()
         display = pygame.display.set_mode(
-            (args.width, args.height), pygame.HWSURFACE | pygame.DOUBLEBUF
+            (args['width'], args['height']), pygame.HWSURFACE | pygame.DOUBLEBUF
         )
 
         # Place a title to game window
-        pygame.display.set_caption(args.description)
+        pygame.display.set_caption(args['description'])
 
         # Show loading screen
         font = pygame.font.Font(pygame.font.get_default_font(), 20)
         text_surface = font.render("Rendering map...", True, COLOR_WHITE)
         display.blit(
             text_surface,
-            text_surface.get_rect(center=(args.width / 2, args.height / 2)),
+            text_surface.get_rect(center=(args['width'] / 2, args['height'] / 2)),
         )
         pygame.display.flip()
 
         # Init
-        hud = InfoBar(args.width, args.height)
+        hud = InfoBar(args['width'], args['height'])
         input_control = InputControl()
         world = World(args)
 
-        actors = scenario_reader(args.scenario)
+        actors = scenario_reader(args['scenario'])
         # For each module, assign other modules that are going to be used inside that module
         hud.start(world)
         input_control.start(hud, world)
@@ -199,6 +199,6 @@ def main():
     args.description = "BounCMPE CarlaSim 2D Visualizer"
     args.width, args.height = [int(x) for x in args.res.split("x")]
 
-
+    args = vars(args)
     # Run game loop
     game_loop(args)

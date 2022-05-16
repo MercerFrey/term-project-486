@@ -664,7 +664,7 @@ class World(object):
 
         self._input = None
 
-        self.dim = (args.width, args.height)
+        self.dim = (args['width'], args['height'])
         self.surface_size = [0, 0]
         self.prev_scaled_size = 0
         self.scaled_size = 0
@@ -694,8 +694,8 @@ class World(object):
     def _get_data_from_carla(self):
         """Retrieves the data from the server side"""
         try:
-            self.client = carla.Client(self.args.host, self.args.port)
-            self.client.set_timeout(self.args.timeout)
+            self.client = carla.Client(self.args['host'], self.args['port'])
+            self.client.set_timeout(self.args['timeout'])
 
             world = self.client.get_world()
             new_settings = world.get_settings()
@@ -778,7 +778,7 @@ class World(object):
 
         self._input.wheel_offset = HERO_DEFAULT_SCALE
 
-        self.traffic_manager = self.client.get_trafficmanager(port=self.args.tm_port)
+        self.traffic_manager = self.client.get_trafficmanager(port=self.args['tm_port'])
 
 
     def get_vehicles(self):
