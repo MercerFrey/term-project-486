@@ -13,9 +13,6 @@ from .other_with_controller import Other
 
 from .color import *
 
-
-max_acc = 0
-
 def game_loop(args):
     """Initialized, Starts and runs all the needed modules for No Rendering Mode"""
     try:
@@ -55,7 +52,8 @@ def game_loop(args):
         clock = pygame.time.Clock()
 
         # Max acc
-        #max_acc=0
+        max_lat_acc = 0
+        lat_acc_list = []
         
         while True:
             clock.tick_busy_loop(500)
@@ -64,9 +62,13 @@ def game_loop(args):
             world.tick(clock)
             [actor.tick(clock) for actor in actors]
 
-            # Calculates max acc in general
-            max_acceleration_calculator(actors[1].actor, world.world.get_map())
-            
+            # Current lateral acceleration for other1
+            curr_lat_acc = lat_acceleration_calculator(actors[1].actor, world.world.get_map())
+            lat_acc_list.append(curr_lat_acc)
+            if curr_lat_acc > max_lat_acc:
+                max_lat_acc = curr_lat_acc
+    
+
             hud.tick(clock)
             input_control.tick(clock)
 
@@ -85,9 +87,7 @@ def game_loop(args):
     finally:
         [actor.destroy() for actor in actors if actor is not None]
 
-        # Prints max acceleration
-        with open("max_acc.txt", 'w') as f:
-            f.write(str(max_acc))
+        return lat_acc_list, max_lat_acc
 
 
 
@@ -124,8 +124,8 @@ def scenario_reader(scenario_file):
 
     return actors
 
-def max_acceleration_calculator(actor, map):
-    global max_acc
+# Return current lateral acceleration according to the road.
+def lat_acceleration_calculator(actor, map):
 
     waypoint = map.get_waypoint(actor.get_location(), project_to_road=True, lane_type=carla.LaneType.Driving)
     road_yaw = waypoint.transform.rotation.yaw
@@ -137,9 +137,7 @@ def max_acceleration_calculator(actor, map):
                 + abs(curr_acc_vector.y * math.cos(road_yaw - actor_yaw))
                 )
 
-    if curr_lat_acc > max_acc:
-       max_acc = curr_lat_acc
-    
+    return curr_lat_acc
 
 
 def main():
