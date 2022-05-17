@@ -99,13 +99,13 @@ def main():
         }
 
     for i in range(25):
-        try:
-            args['scenario'] = "par/par_straight_{}.json".format(i)
-            ### KİLLED
-            lat_acc_list, max_lat_acc = run_simulation.game_loop(args)
-            print(f'max_lat_acc: {max_lat_acc}')
-            #print(f'lat_acc_list: {lat_acc_list}')
-        except Exception as e:
-            print("exception yedim lol")
-            print(e)
+        ### KİLLED
+
+        args['scenario'] = "par/par_straight_{}.json".format(i)
+
+        lat_acc_list, max_lat_acc = run_simulation.game_loop(args)
+
+        print(f'max_lat_acc: {max_lat_acc}')
+        #print(f'lat_acc_list: {lat_acc_list}')
+
 main()

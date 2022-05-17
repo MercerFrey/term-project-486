@@ -60,8 +60,11 @@ def game_loop(args):
 
             # Tick all modules
             world.tick(clock)
-            [actor.tick(clock) for actor in actors]
-
+            try:
+                [actor.tick(clock) for actor in actors]
+            except RuntimeError:
+                print("runtimeeee loool")
+                break
             # Current lateral acceleration for other1
             curr_lat_acc = lat_acceleration_calculator(actors[1].actor, world.world.get_map())
             lat_acc_list.append(curr_lat_acc)
@@ -86,7 +89,6 @@ def game_loop(args):
 
     finally:
         [actor.destroy() for actor in actors if actor is not None]
-        pygame.quit()
         return lat_acc_list, max_lat_acc
 
 
