@@ -4,7 +4,7 @@ import carla
 import pygame
 import datetime
 
-from .color import *
+from color import *
 
 HELP_TEXT = """
 Welcome to BounCMPE CarlaSim 2D Visualizer

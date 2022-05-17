@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 import argparse
-import subprocess
+
+import run_simulation
 
 # pick 25 appropriate samples from 100 samples.
 def sample_25_with_limits(xlimits):
@@ -68,7 +69,7 @@ def main():
     argparser.add_argument(
         "--filename",
         metavar="f",
-        default="scenario_1.json",
+        default="straight.json",
         help="scenario file that will be parameterized",
     )
 
@@ -81,13 +82,30 @@ def main():
     v1_speed = samples[:, 1]
     v2_speed = samples[:, 2]
     
-    plot(ego_speed, v1_speed, v2_speed)
-    write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
+    #plot(ego_speed, v1_speed, v2_speed)
+    #write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
     
-    # for i in range(25):
-    #     try:
-    #         p = subprocess.Popen("python client/run.py --scenario par/par_scenario_{}.json".format(i), shell=True)
-    #         p.wait()
-    #     except Exception as e:
-    #         pass
+    args = {
+        'host': '127.0.0.1',
+        'port': 2000,
+        'tm_port': 8000, 
+        'timeout': 2.0, 
+        'res': '1280x720', 
+        'filter': 'vehicle.audi.*', 
+        'scenario': 'curved.json', 
+        'description': 'BounCMPE CarlaSim 2D Visualizer',
+        'width': 1280,
+        'height': 720
+        }
+
+    for i in range(25):
+        try:
+            args['scenario'] = "par/par_straight_{}.json".format(i)
+            ### KİLLED
+            lat_acc_list, max_lat_acc = run_simulation.game_loop(args)
+            print(f'max_lat_acc: {max_lat_acc}')
+            #print(f'lat_acc_list: {lat_acc_list}')
+        except Exception as e:
+            print("exception yedim lol")
+            print(e)
 main()

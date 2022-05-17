@@ -4,14 +4,14 @@ import carla
 import json
 import math
 
-from .hud import InfoBar
+from hud import InfoBar
 #from .hero import Hero
-from .world import World
-from .input_control import InputControl
-from .hero_with_controller import Hero
-from .other_with_controller import Other
+from world import World
+from input_control import InputControl
+from hero_with_controller import Hero
+from other_with_controller import Other
 
-from .color import *
+from color import *
 
 def game_loop(args):
     """Initialized, Starts and runs all the needed modules for No Rendering Mode"""
@@ -86,7 +86,7 @@ def game_loop(args):
 
     finally:
         [actor.destroy() for actor in actors if actor is not None]
-
+        pygame.quit()
         return lat_acc_list, max_lat_acc
 
 
@@ -140,7 +140,7 @@ def lat_acceleration_calculator(actor, map):
     return curr_lat_acc
 
 
-def main():
+def run_simulation():
     """Parses the arguments received from commandline and runs the game loop"""
 
     # Define arguments that will be received and parsed

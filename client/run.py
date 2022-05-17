@@ -1,4 +1,4 @@
-from app.main import main
+from app.run_simulation import run_simulation
 
 if __name__ == "__main__":
-    main()
+    run_simulation()

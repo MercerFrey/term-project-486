@@ -3,7 +3,7 @@ import carla
 import math
 from matplotlib.backend_bases import LocationEvent
 
-from .controller import PurePursuitController
+from controller import PurePursuitController
 
 
 class Other(object):

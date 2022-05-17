@@ -10,7 +10,7 @@ import logging
 
 from carla import TrafficLightState as tls
 
-from .color import *
+from color import *
 
 PIXELS_PER_METER = 12
 HERO_DEFAULT_SCALE = 1.0
