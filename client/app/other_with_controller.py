@@ -4,7 +4,7 @@ import math
 from matplotlib.backend_bases import LocationEvent
 
 from controller import PurePursuitController
-
+from controller import PIDController
 
 class Other(object):
     def __init__(self, location, rotation, waypoints, target_speed_km, actor_role):
@@ -22,15 +22,16 @@ class Other(object):
 
 
     def start(self, world):
-        print(self.actor_role, " created")
         self.world = world
         spawn_point = carla.Transform(
             self.location, self.rotation
         )
         self.actor = self.world.spawn_hero("vehicle.audi.tt", spawn_point, role_name=self.actor_role)
 
+        if self.actor_role == "other2":
+            self.controller = PurePursuitController(pid=PIDController(Kp=0.3, Ki=0, Kd=0.02))
+        
         self.controller = PurePursuitController()
-
         self.world.register_actor_waypoints_to_draw(self.actor, self.waypoints)
         # self.actor.set_autopilot(True, world.args.tm_port)
 
@@ -73,7 +74,6 @@ class Other(object):
     def destroy(self):
         """Destroy the hero actor when class instance is destroyed"""
         if self.actor is not None:
-            print(self.actor_role, " dieded")
             self.actor.destroy()
 
     def ttc(self, actor_id):

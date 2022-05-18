@@ -132,8 +132,7 @@ class PurePursuitController:
     def __init__(
         self,
         pure_pursuit=PurePursuit(),
-        pid=PIDController(Kp=0.20, Ki=0.005, Kd=0),
-    ):
+        pid=PIDController(Kp=0.17, Ki=0.005, Kd=0.002)):
         self.pure_pursuit = pure_pursuit
         self.pid = pid
 

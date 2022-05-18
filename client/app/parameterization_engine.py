@@ -83,7 +83,7 @@ def main():
     v2_speed = samples[:, 2]
     
     #plot(ego_speed, v1_speed, v2_speed)
-    #write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
+    write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
     
     args = {
         'host': '127.0.0.1',
@@ -98,14 +98,15 @@ def main():
         'height': 720
         }
 
-    for i in range(25):
-        ### KİLLED
+    run_simulation.game_loop(args)
+    # for i in range(25):
+    #     ### KİLLED
 
-        args['scenario'] = "par/par_straight_{}.json".format(i)
+    #     args['scenario'] = "par/par_straight_{}.json".format(i)
 
-        lat_acc_list, max_lat_acc = run_simulation.game_loop(args)
+    #     lat_acc_list, max_lat_acc = run_simulation.game_loop(args)
 
-        print(f'max_lat_acc: {max_lat_acc}')
+    #     print(f'max_lat_acc: {max_lat_acc}')
         #print(f'lat_acc_list: {lat_acc_list}')
 
 main()

@@ -18,7 +18,6 @@ class Hero(object):
         self.tick_count = 0
 
     def start(self, world):
-        print(self.actor_role, " created")
         self.world = world
         spawn_point = carla.Transform(
             self.location, self.rotation
@@ -49,6 +48,5 @@ class Hero(object):
     def destroy(self):
         """Destroy the hero actor when class instance is destroyed"""
         if self.actor is not None:
-            print(self.actor_role, " dieded")
             self.actor.destroy()
 

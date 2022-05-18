@@ -16,7 +16,6 @@ from color import *
 def game_loop(args):
     """Initialized, Starts and runs all the needed modules for No Rendering Mode"""
     try:
-
         # Init Pygame
         pygame.init()
         display = pygame.display.set_mode(
@@ -36,60 +35,91 @@ def game_loop(args):
         pygame.display.flip()
 
         # Init
-        hud = InfoBar(args['width'], args['height'])
         input_control = InputControl()
-        world = World(args)
+       
+    except:
+        print("Initialization Error")
 
-        actors = scenario_reader(args['scenario'])
-        # For each module, assign other modules that are going to be used inside that module
-        hud.start(world)
-        input_control.start(hud, world)
-        world.start(input_control)
 
-        [actor.start(world) for actor in actors]
-
-        # Game loop
-        clock = pygame.time.Clock()
-
-        # Max acc
-        max_lat_acc = 0
-        lat_acc_list = []
-        
-        while True:
-            clock.tick_busy_loop(500)
-
-            # Tick all modules
-            world.tick(clock)
+    dict_max_lat_acc = dict()
+    list_lat_acc_list = []
+    for scenario_type in ['straight', 'curved']:
+        for i in range(10):
             try:
-                [actor.tick(clock) for actor in actors]
-            except RuntimeError:
-                print("runtimeeee loool")
-                break
-            # Current lateral acceleration for other1
-            curr_lat_acc = lat_acceleration_calculator(actors[1].actor, world.world.get_map())
-            lat_acc_list.append(curr_lat_acc)
-            if curr_lat_acc > max_lat_acc:
-                max_lat_acc = curr_lat_acc
-    
 
-            hud.tick(clock)
-            input_control.tick(clock)
+                world = World(args)
+                hud = InfoBar(args['width'], args['height'])    
 
+                args['scenario'] = "par/par_{scenario_type}_{num}.json".format(scenario_type=scenario_type, num=i)
+
+
+                actors = scenario_reader(args['scenario'])
+                # For each module, assign other modules that are going to be used inside that module
+                hud.start(world)
+                input_control.start(hud, world)
+                world.start(input_control)
+
+                
+                [actor.start(world) for actor in actors]
+
+                # Game loop
+                clock = pygame.time.Clock()
+
+                # Max acc
+                max_lat_acc = 0
+                lat_acc_list = []
+                
+                while True:
+                    clock.tick_busy_loop(500)
+
+                    # Tick all modules
+                    world.tick(clock)
+                    try:
+                        [actor.tick(clock) for actor in actors]
+                    except RuntimeError:
+                        print("Next version")
+                        break
+                    # Current lateral acceleration for other1
+                    curr_lat_acc = lat_acceleration_calculator(actors[1].actor, world.world.get_map())
+                    lat_acc_list.append(curr_lat_acc)
+                    if curr_lat_acc > max_lat_acc:
+                        max_lat_acc = curr_lat_acc
             
-            # Render all modules
-            display.fill(COLOR_ALUMINIUM_4)
-            world.render(display)
-            hud.render(display)
-            input_control.render(display)
 
-            pygame.display.flip()
+                    hud.tick(clock)
+                    input_control.tick(clock)
 
-    except KeyboardInterrupt:
-        print("\nCancelled by user. Bye!")
+                    
+                    # Render all modules
+                    display.fill(COLOR_ALUMINIUM_4)
+                    world.render(display)
+                    hud.render(display)
+                    input_control.render(display)
 
-    finally:
-        [actor.destroy() for actor in actors if actor is not None]
-        return lat_acc_list, max_lat_acc
+                    pygame.display.flip()
+
+            except KeyboardInterrupt:
+                print("\nCancelled by user. Bye!")
+
+            finally:
+
+                [actor.destroy() for actor in actors if actor is not None]
+                actors = []
+                dict_max_lat_acc[i] = max_lat_acc
+                list_lat_acc_list.append(max_lat_acc)
+                # print(f'max_lat_acc: {max_lat_acc}')
+                # return lat_acc_list, max_lat_acc
+        
+        
+        sorted_dict_max_lat = dict(sorted(dict_max_lat_acc.items(), key=lambda x: -x[1]))
+
+        critical_lat_acc_history = list(sorted_dict_max_lat.items())[:5]
+
+        with open(f'{scenario_type}_critical_lat_acc_5.txt', 'w') as f:
+            json.dump(critical_lat_acc_history, f) 
+
+        with open(f'{scenario_type}_max_lat_acc.txt', 'w') as f:
+            json.dump({0: list_lat_acc_list}, f)
 
 
 
