@@ -131,10 +131,16 @@ class PIDController:
 class PurePursuitController:
     def __init__(
         self,
-        pure_pursuit=PurePursuit(),
-        pid=PIDController(Kp=0.17, Ki=0.005, Kd=0.002)):
-        self.pure_pursuit = pure_pursuit
-        self.pid = pid
+        pure_pursuit=None,
+        pid=None):
+        if pure_pursuit is None:
+            self.pure_pursuit = PurePursuit()
+        else:
+            self.pure_pursuit = pure_pursuit
+        if pid is None:
+            self.pid = PIDController(Kp=0.20, Ki=0.01, Kd=0)
+        else:
+            self.pid = pid
 
     def get_control(self, actor, waypoints, target_speed, dt):
 

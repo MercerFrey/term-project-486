@@ -63,28 +63,7 @@ def write_scenario_speeds(scenario_filename, scenario, speed_list):
 
         write_to_json(scenario, "par/par_{}_{}.json".format(scenario_filename, i))
 
-def main():
-    argparser = argparse.ArgumentParser()
-
-    argparser.add_argument(
-        "--filename",
-        metavar="f",
-        default="straight.json",
-        help="scenario file that will be parameterized",
-    )
-
-    args = argparser.parse_args()
-
-    scenario, xlimits = read_scenario_speeds(args.filename)
-    samples = sample_25_with_limits(xlimits)
-
-    ego_speed = samples[:, 0]
-    v1_speed = samples[:, 1]
-    v2_speed = samples[:, 2]
-    
-    #plot(ego_speed, v1_speed, v2_speed)
-    write_scenario_speeds(args.filename.split(".")[0], scenario, samples)
-    
+def main(): 
     args = {
         'host': '127.0.0.1',
         'port': 2000,
@@ -98,15 +77,32 @@ def main():
         'height': 720
         }
 
-    run_simulation.game_loop(args)
-    # for i in range(25):
-    #     ### KİLLED
+    # TODO
+    # scenario_types = ['straight', 'curved'] does not work 
+    scenario_types = ["curved"]
+    
+    for scenario_type in scenario_types :
+        scenario, xlimits = read_scenario_speeds(f'{scenario_type}.json')
+        samples = sample_25_with_limits(xlimits)
 
-    #     args['scenario'] = "par/par_straight_{}.json".format(i)
+        ego_speed = samples[:, 0]
+        v1_speed = samples[:, 1]
+        v2_speed = samples[:, 2]
+        
+        
+        plot(ego_speed, v1_speed, v2_speed)
+        
+        write_scenario_speeds(scenario_type, scenario, samples)
+        
+        args["filename"] = f'{scenario_type}.json'
+        run_simulation.game_loop(args)
 
-    #     lat_acc_list, max_lat_acc = run_simulation.game_loop(args)
 
-    #     print(f'max_lat_acc: {max_lat_acc}')
-        #print(f'lat_acc_list: {lat_acc_list}')
+        # with open(f"{scenario_type}_max_lat_acc.txt", 'r') as f:
+        #     data = np.array(json.load(f)["0"])
+            
+        # fig, ax = plt.subplots(figsize =(10, 7))
+        # ax.hist(data)
+        # plt.show()
 
 main()

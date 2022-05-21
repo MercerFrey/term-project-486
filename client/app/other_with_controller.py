@@ -28,16 +28,11 @@ class Other(object):
         )
         self.actor = self.world.spawn_hero("vehicle.audi.tt", spawn_point, role_name=self.actor_role)
 
-        if self.actor_role == "other2":
-            self.controller = PurePursuitController(pid=PIDController(Kp=0.3, Ki=0, Kd=0.02))
-        
         self.controller = PurePursuitController()
         self.world.register_actor_waypoints_to_draw(self.actor, self.waypoints)
         # self.actor.set_autopilot(True, world.args.tm_port)
 
     def tick(self, clock):
-        if self.target_speed == 0:
-            return
             
         ctrl = carla.VehicleControl()
 

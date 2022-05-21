@@ -36,90 +36,93 @@ def game_loop(args):
 
         # Init
         input_control = InputControl()
-       
+        # TODO move world here
+
     except:
         print("Initialization Error")
 
 
     dict_max_lat_acc = dict()
     list_lat_acc_list = []
-    for scenario_type in ['straight', 'curved']:
-        for i in range(10):
-            try:
+    
+    scenario_type = args['filename'].split(".")[0]
+    
+    for i in range(25):
+        try:
+            world = World(args)
+            hud = InfoBar(args['width'], args['height'])  
+            args['scenario'] = "par/par_{scenario_type}_{num}.json".format(scenario_type=scenario_type, num=i)
 
-                world = World(args)
-                hud = InfoBar(args['width'], args['height'])    
+            actors = scenario_reader(args['scenario'])
+            # For each module, assign other modules that are going to be used inside that module
+            hud.start(world)
+            input_control.start(hud, world)
+            world.start(input_control)
 
-                args['scenario'] = "par/par_{scenario_type}_{num}.json".format(scenario_type=scenario_type, num=i)
+            for actor in actors:
+                actor.start(world)
+            # Game loop
+            clock = pygame.time.Clock()
 
-
-                actors = scenario_reader(args['scenario'])
-                # For each module, assign other modules that are going to be used inside that module
-                hud.start(world)
-                input_control.start(hud, world)
-                world.start(input_control)
-
-                
-                [actor.start(world) for actor in actors]
-
-                # Game loop
-                clock = pygame.time.Clock()
-
-                # Max acc
-                max_lat_acc = 0
-                lat_acc_list = []
-                
-                while True:
-                    clock.tick_busy_loop(500)
-
-                    # Tick all modules
-                    world.tick(clock)
-                    try:
-                        [actor.tick(clock) for actor in actors]
-                    except RuntimeError:
-                        print("Next version")
-                        break
-                    # Current lateral acceleration for other1
-                    curr_lat_acc = lat_acceleration_calculator(actors[1].actor, world.world.get_map())
-                    lat_acc_list.append(curr_lat_acc)
-                    if curr_lat_acc > max_lat_acc:
-                        max_lat_acc = curr_lat_acc
+            # Max acc
+            max_lat_acc = 0
+            lat_acc_list = []
             
+            while True:
+                clock.tick_busy_loop(500)
 
-                    hud.tick(clock)
-                    input_control.tick(clock)
-
-                    
-                    # Render all modules
-                    display.fill(COLOR_ALUMINIUM_4)
-                    world.render(display)
-                    hud.render(display)
-                    input_control.render(display)
-
-                    pygame.display.flip()
-
-            except KeyboardInterrupt:
-                print("\nCancelled by user. Bye!")
-
-            finally:
-
-                [actor.destroy() for actor in actors if actor is not None]
-                actors = []
-                dict_max_lat_acc[i] = max_lat_acc
-                list_lat_acc_list.append(max_lat_acc)
-                # print(f'max_lat_acc: {max_lat_acc}')
-                # return lat_acc_list, max_lat_acc
+                # Tick all modules
+                world.tick(clock)
+                try:
+                    for actor in actors:
+                        actor.tick(clock)
+                
+                except RuntimeError:
+                    print(f'{scenario_type}: {i}')
+                    break
+                
+                # Current lateral acceleration for other1
+                curr_lat_acc = lat_acceleration_calculator(actors[1].actor, world.world.get_map())
+                lat_acc_list.append(curr_lat_acc)
+                if curr_lat_acc > max_lat_acc:
+                    max_lat_acc = curr_lat_acc
         
-        
-        sorted_dict_max_lat = dict(sorted(dict_max_lat_acc.items(), key=lambda x: -x[1]))
 
-        critical_lat_acc_history = list(sorted_dict_max_lat.items())[:5]
+                hud.tick(clock)
+                input_control.tick(clock)
 
-        with open(f'{scenario_type}_critical_lat_acc_5.txt', 'w') as f:
-            json.dump(critical_lat_acc_history, f) 
+                
+                # Render all modules
+                display.fill(COLOR_ALUMINIUM_4)
+                world.render(display)
+                hud.render(display)
+                input_control.render(display)
 
-        with open(f'{scenario_type}_max_lat_acc.txt', 'w') as f:
-            json.dump({0: list_lat_acc_list}, f)
+                pygame.display.flip()
+
+        except KeyboardInterrupt:
+            print("\nCancelled by user. Bye!")
+
+        finally:
+            for actor in actors:
+                if actor is not None:
+                    actor.destroy()  
+            
+            dict_max_lat_acc[i] = max_lat_acc
+            list_lat_acc_list.append(lat_acc_list)
+            # print(f'max_lat_acc: {max_lat_acc}')
+            # return lat_acc_list, max_lat_acc
+    
+    
+    sorted_dict_max_lat = dict(sorted(dict_max_lat_acc.items(), key=lambda x: -x[1]))
+
+    critical_lat_acc_history = [list_lat_acc_list[index] for index in list(sorted_dict_max_lat)[:5]]
+
+    with open(f'{scenario_type}_critical_lat_acc_5.json', 'w') as f:
+        json.dump(critical_lat_acc_history, f) 
+
+    with open(f'{scenario_type}_max_lat_acc.json', 'w') as f:
+        json.dump(list(dict_max_lat_acc.values()), f)
 
 
 
@@ -165,6 +168,7 @@ def lat_acceleration_calculator(actor, map):
 
     
     curr_acc_vector = actor.get_acceleration()
+    # TODO check this calculation
     curr_lat_acc= (abs(curr_acc_vector.x * math.sin(road_yaw - actor_yaw))
                 + abs(curr_acc_vector.y * math.cos(road_yaw - actor_yaw))
                 )
