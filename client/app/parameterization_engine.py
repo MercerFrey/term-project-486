@@ -47,6 +47,17 @@ def write_scenario_speeds(scenario_filename, scenario, speed_list):
         write_to_json(scenario, "par/par_{}_{}.json".format(scenario_filename, i))
 
 def main(): 
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument(
+        "--scenario",
+        metavar="straight",
+        default="straight",
+        help="Straight or curved (default: straight)",
+    )
+    
+    scenario_type = argparser.parse_args().scenario
+    print(scenario_type)
+    
     args = {
         'host': '127.0.0.1',
         'port': 2000,
@@ -60,34 +71,30 @@ def main():
         'height': 720
         }
 
-    # TODO
-    # scenario_types = ['straight', 'curved'] does not work 
-    scenario_types = ["straight"]
+
+    scenario, xlimits = read_scenario_speeds(f'{scenario_type}.json')
+    samples = sample_25_with_limits(xlimits)
+
+    ego_speed = samples[:, 0]
+    v1_speed = samples[:, 1]
+    v2_speed = samples[:, 2]
     
-    for scenario_type in scenario_types :
-        scenario, xlimits = read_scenario_speeds(f'{scenario_type}.json')
-        samples = sample_25_with_limits(xlimits)
 
-        ego_speed = samples[:, 0]
-        v1_speed = samples[:, 1]
-        v2_speed = samples[:, 2]
-        
-
-        #write_scenario_speeds(scenario_type, scenario, samples)
-        
-        #args["filename"] = f'{scenario_type}.json'
-        #run_simulation.game_loop(args)
+    #write_scenario_speeds(scenario_type, scenario, samples)
+    
+    #args["filename"] = f'{scenario_type}.json'
+    #run_simulation.game_loop(args)
 
 
-        # print plots and save them
-        # no file for target speeds
-        print_plot.print_plot("target_speeds", f'{scenario_type}_target_speeds.json',
-                    ego_speed=ego_speed,
-                    v1_speed=v1_speed,
-                    v2_speed=v2_speed)
-        print_plot.print_plot("max_histogram", f'{scenario_type}_max_lat_acc.json')
-        for i in range(5):
-            print_plot.print_plot("top_5", f'{scenario_type}_critical_lat_acc_5.json', index=i)
+    # print plots and save them
+    # no file for target speeds
+    print_plot.print_plot("target_speeds", f'{scenario_type}_target_speeds.json',
+                ego_speed=ego_speed,
+                v1_speed=v1_speed,
+                v2_speed=v2_speed)
+    print_plot.print_plot("max_histogram", f'{scenario_type}_max_lat_acc.json')
+    for i in range(5):
+        print_plot.print_plot("top_5", f'{scenario_type}_critical_lat_acc_5.json', index=i)
 
 
 main()
