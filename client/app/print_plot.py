@@ -47,8 +47,12 @@ def print_plot(plot_type, filename, **kwargs):
         ymax = max(data[kwargs["index"]])
         xmax = data[kwargs["index"]].index(ymax)
         axs.annotate(f'Max Lateral Acceleration\n{round(ymax,3)}', xy=(xmax, ymax), xytext=(xmax + 10, ymax-1))
+    
+    save_file = f'docs/plots/{filename.split(".")[0]}.png'
+    if "index" in kwargs:
+        save_file = f'{save_file.split(".")[0]}_{kwargs["index"]}.png' 
 
-    plt.savefig(f'/docs/plots/{filename.split(".")[0]}.png')
+    plt.savefig(save_file)
     plt.show()
 
 # print_plot("straight_max_lat_acc.json", "max_lat_acc_histogram")
