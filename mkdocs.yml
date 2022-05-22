@@ -3,8 +3,6 @@ site_name: Documentation
 
 nav:
   - Home: 'index.md'
-  
-  - Meli: 'index.md'
 
   - Introduction:
     - 'Introduction' : 'intro.md'
