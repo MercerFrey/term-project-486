@@ -36,6 +36,7 @@ class Other(object):
             
         ctrl = carla.VehicleControl()
 
+        # TODO try to remove handwritten control
         if self.actor_role == "other1":
             if not self.lane_changed:
                 if self.ttc(self.actor.id + 1) < 3:
