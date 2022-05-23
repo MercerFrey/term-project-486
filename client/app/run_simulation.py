@@ -168,9 +168,10 @@ def lat_acceleration_calculator(actor, map):
 
     
     curr_acc_vector = actor.get_acceleration()
-    # TODO check this calculation
-    curr_lat_acc= (abs(curr_acc_vector.x * math.sin(road_yaw - actor_yaw))
-                + abs(curr_acc_vector.y * math.cos(road_yaw - actor_yaw))
+    
+    curr_lat_acc= abs(
+                (curr_acc_vector.x * math.sin(actor_yaw - road_yaw))
+                - (curr_acc_vector.y * math.cos(actor_yaw - road_yaw))
                 )
 
     return curr_lat_acc
