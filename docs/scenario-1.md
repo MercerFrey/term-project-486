@@ -2,4 +2,5 @@
 
 This scenario is the one with the straight road.
 
-## TODO add photo from the simulator.
+![target speeds image](images/Screenshot%20from%202022-05-24%2021-23-20.png)
+![target speeds image](images/Screenshot%20from%202022-05-24%2021-23-54.png)

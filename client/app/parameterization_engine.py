@@ -80,10 +80,10 @@ def main():
     v2_speed = samples[:, 2]
     
 
-    #write_scenario_speeds(scenario_type, scenario, samples)
+    write_scenario_speeds(scenario_type, scenario, samples)
     
-    #args["filename"] = f'{scenario_type}.json'
-    #run_simulation.game_loop(args)
+    args["filename"] = f'{scenario_type}.json'
+    run_simulation.game_loop(args)
 
 
     # print plots and save them

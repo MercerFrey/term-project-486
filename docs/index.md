@@ -2,7 +2,7 @@
 
 This project is about creating tests with an open-source simulation, Carla. What we investigated in this project is called a cut-out scenario. Three cars are in the same lane. The first car is slower than the other two, and the car in the middle changes lane. The last car is the autonomous one, called Ego. In our tests, we investigate the Ego car's movements to ensure autonomous cars are safe on the roads.
 
-![No Gif](cut-out.gif)
+![No Gif](images/cut-out.gif)
 
 Scenarios are divided into two: straight or curved roads. 25 scenarios are created for each scenario by picking random parameters as target speeds. As follows:
 

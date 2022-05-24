@@ -53,9 +53,4 @@ def print_plot(plot_type, filename, **kwargs):
         save_file = f'{save_file.split(".")[0]}_{kwargs["index"]}.png' 
 
     plt.savefig(save_file)
-    plt.show()
-
-# print_plot("straight_max_lat_acc.json", "max_lat_acc_histogram")
-# for i in range(5):
-#     print_plot("straight_critical_lat_acc_5.json", "top_5_critical_lateral_acceleration_history", index=i)
 

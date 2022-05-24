@@ -9,8 +9,6 @@
 | Other2 | (-485.740143, 90, 0.281942) | (0, -89.642479, 0) | 0-20 km/h |
 
       
-## Test Requirements
-
 ## Test Results
 
 - #### Target Speeds
