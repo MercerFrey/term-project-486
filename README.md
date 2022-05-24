@@ -1,6 +1,6 @@
 
 ```
-docker-compose up -d
+docker-compose up -d 
 python utils/config.py -m Town04
 
 ```
