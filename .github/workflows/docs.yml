@@ -28,5 +28,5 @@ jobs:
       - name: Deploy
         run: |
           git pull
-          run: mkdocs gh-deploy  --force # build docs and deploy to your github project pages
-
+          mkdocs gh-deploy  --force # build docs and deploy to your github project pages
+      
